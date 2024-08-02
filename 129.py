@@ -1,27 +1,32 @@
 
-
-for num in range(3, 100):
+max_power_number = -1
+max_power = -1
+start = 1000000
+for num in range(start, 100000000):
     if num % 2 == 0 or num % 5 == 0:
         continue
-    consecutive_1 = 1
     exponent = 1
-    
-    print(f"Number is {num}")
+    remainder1 = 1
+    remainder2 = 1
     while True:
-        power_10 = 10**exponent
-        consecutive_1 += power_10
-        remainder1 = None
-        remainder2 = None
-        if power_10 >= num:
-            remainder1 = power_10 % num
-        if consecutive_1 >= num:
-            remainder2 = consecutive_1 % num
-        print(exponent, consecutive_1, remainder1, remainder2)
+        # print(num, remainder, exponent)
+        remainder1 = remainder1 * 10
+        remainder2 = remainder2 + remainder1
+        if remainder1 >= num:
+            remainder1 %= num
+        if remainder2 >= num:
+            remainder2 %= num
         if remainder2 == 0:
             break
-
         exponent += 1
-    print()
+        
+    print(f"Number is {num} {exponent + 1}")
+    if exponent + 1 > start:
+        print("Found it!!!!")
+        exit(0)
+
+
+
 
 
 
