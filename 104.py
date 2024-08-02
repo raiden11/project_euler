@@ -1,5 +1,4 @@
 
-
 a = 1 
 b = 1
 
@@ -35,14 +34,39 @@ def check_pandigital_first_and_last_9_digits(number):
     
     return is_first_9_pandigital and is_last_9_pandigital
 
-# print(check_pandigital_first_and_last_9_digits(2465279381829598263586239510035097230562836512000087125145697283))
+# print(check_pandigital_first_and_last_9_digits(246579381829598263586239510035097230562836512000087125145697283))
 
-for i in range(3, 100000):
+# assuming both matrices are 2X2
+def matmul(m1, m2):
+    return [[m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0], m1[0][0]*m2[0][1] + m1[0][1]*m2[1][1]], 
+            [m1[1][0]*m2[0][0] + m1[1][1]*m2[1][0], m1[1][0]*m2[0][1] + m1[1][1]*m2[1][1]]]
+    
+def matrix_power(base, power):
+    if power == 1:
+        return base
+    m_half_power = matrix_power(base, power//2)
+    m_power = matmul(m_half_power, m_half_power)
+    if power % 2 == 0:
+        return m_power
+    else:
+        return matmul(m_power, base)
+
+def generate_ith_fibonacci(f1, f2, i):
+    m_power_n = matrix_power([[1, 1], [1, 0]], i)
+    f_n_plus_1 = m_power_n[0][0]*f1 + m_power_n[0][1]*f2
+    f_n = m_power_n[1][0]*f1 + m_power_n[1][1]*f2
+    return f_n
+
+# 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89
+for i in range(3, 1000000):
     c = a + b
-    # if i == 541:
-    #     print(i, c)
-    if i >= 2748 and check_pandigital_first_and_last_9_digits(c):
-        print("ans:", i)
+    if c >= 1000000000:
+        c%=1000000000
+    if is_pandigital(c):
+        number = generate_ith_fibonacci(1, 1, i-1)
+        print(f"checking for {i}")
+        if is_pandigital(extract_first_9_digits(number)):
+            print(f"Found the answer for i = {i} !!")
+            exit(1)
     a = b
     b = c
-
