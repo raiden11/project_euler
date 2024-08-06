@@ -6,10 +6,18 @@ from collections import defaultdict
 # This is a simple implementation based problem. The only catch is to search for square numbers first, rather than x, y or z 
 # Assuming the equations to be x+y=a^2, x-y=b^2, x+z=c^2, x-z=d^2, y+z=p^2, y-z=q^2
 # Note that since x > y > z, so a > c > p and a > b, c > d and p > q
+# Also, note that all x, y, z, must be of same parity. And all (a, b) and (c, d) and (p, q) must be of same parity to be divisible by 2
 # x can be written as x = (a^2+b^2)/2 = (c^2+d^2)/2. Similarly z = (p^2-q^2)/2 = (c^2-d^2)/2. Same for y
 # We start by iterating over all possible sum of squares x that have two solutions as x is sum of squares of (a, b) as well as (c, d) 
 # Then possible y and possible z would be difference of these solutions (a^2-b^2) or (c^2-d^2)/2
 # Complete all the missing pieces using if conditions and you get the solution!
+
+# Trivia (from discussion thread):
+# 1. This is a well known problem whose solutions were known back in 1642. Someone solved it by hand. Euler found the smallest solution.
+#    Here is the paper explaining a general solution: https://www.austms.org.au/wp-content/uploads/Gazette/2005/Sep05/Buchholz.pdf
+# 2. Some members solved it using diophantine equation
+# 3. Further reduction in cases is also possible 
+
 
 start_time = time.time()
 addition_dict = defaultdict(list)
