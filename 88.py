@@ -1,83 +1,57 @@
 
+import time
 from collections import defaultdict
 
-def factorize(n):
-    factors = defaultdict(int)
-    # Check for the number of 2s that divide n
-    while n % 2 == 0:
-        factors[2] += 1
-        n = n // 2
-    
-    # n must be odd at this point
-    # so we can skip one element (i.e., i = i + 2)
-    for i in range(3, int(n**0.5) + 1, 2):
-        # while i divides n, add i and divide n
-        while n % i == 0:
-            factors[i] += 1
-            n = n // i
-    
-    # This condition is to check if n is a prime number
-    # greater than 2
-    if n > 2:
-        factors[n] += 1
-    
-    return factors    
+start_time = time.time()
+limit = 12000
+prime_divisors = [[] for _ in range(2*limit+2)]
+divisors = [set() for _ in range(2*limit+2)]
 
-limit = 24000
-result = [-1]*(6*limit)
+def compute_prime_divisors_of_first_n_numbers(n):
+    for i in range(2, n+1):
+        if len(prime_divisors[i]) == 0:
+            prime_divisors[i].append(i)
+            j = 2*i
+            while j <= n:
+                num = j
+                while num % i == 0:
+                    num //= i
+                    prime_divisors[j].append(i)
+                j+=i
 
-def analyze(number, factors_list, unique_factors, cur, product, multiplied_factors_sum, multplied_factors_count):
+def compute_divisors_of_first_n_numbers(n):
+    for num in range(n+1):
+        prime_divisors_count = len(prime_divisors[num])
+        for i in range(1 << prime_divisors_count):
+            divisor = 1
+            for j in range(prime_divisors_count):
+                if (i & (1 << j)) != 0:
+                    divisor *= prime_divisors[num][j]
+            divisors[num].add(divisor)
 
-    if cur == unique_factors:
-        remaining = number // product
-        if product == 1:
-            return
-        # if remaining == 1:
-        #     k = multplied_factors_count
-        k = (number - (remaining + multiplied_factors_sum)) + multplied_factors_count + 1        
-        # print(product, k, multiplied_factors_sum, multplied_factors_count)
+compute_prime_divisors_of_first_n_numbers(2*limit)
+compute_divisors_of_first_n_numbers(2*limit)
 
-        # if product == num or product == 1:
-        #     return
-        if result[k] == -1:
-            # print(f" Found answer for {k}: {product}")
-            result[k] = number
-        return
+product_sum_pairs = defaultdict(set)
+product_sum_pairs[1] = set({(0, 0)})
+minimal_product_sum = [limit*100000]*(limit+2)
 
-    cur_product = product
-    cur_multiplied_factors_sum = multiplied_factors_sum
-    cur_multplied_factors_count = multplied_factors_count
+for i in range(2, 2*limit+1, 1):
+    for d in divisors[i]:
+        if d == 1:
+            continue
+        for pair in product_sum_pairs[i//d]:
+            product_sum_pairs[i].add((pair[0]+d, pair[1]+1))
+    for pair in product_sum_pairs[i]:
+        k = pair[1] + (i - pair[0])
+        if k <= limit:
+            minimal_product_sum[k] = min(minimal_product_sum[k], i)
 
-    analyze(number, factors_list, unique_factors, cur + 1, cur_product, cur_multiplied_factors_sum, cur_multplied_factors_count)
-    for _ in range(factors_list[cur][1]):
-        cur_product*=factors_list[cur][0]
-        cur_multiplied_factors_sum += factors_list[cur][0]
-        cur_multplied_factors_count += 1
-        analyze(number, factors_list, unique_factors, cur + 1, cur_product, cur_multiplied_factors_sum, cur_multplied_factors_count)
+answer_set = set()
+for i in range(2, limit + 1):
+    answer_set.add(minimal_product_sum[i])
 
-
-for num in range(4, limit):
-    factors_list = []
-    factors_dict = factorize(num)
-    for k, v in factors_dict.items():
-        factors_list.append((k, v))
-    print(f"Number is {num}")
-    analyze(num, factors_list, len(factors_list), cur=0, product=1, multiplied_factors_sum=0, multplied_factors_count=0)
-    print()
-
-k_set = set()
-answer = 0
-for i in range(2, limit+1):
-    if result[i] == -1:
-        print(f"Not found answer for {i}")
-    else:
-        print(f"i = {i}, answer = {result[i]}")
-        k_set.add(result[i])
-
-for num in k_set:
-    answer += num
-
-print(f"Final answer is {answer}")
-
-
+print(sum(answer_set))
+end_time = time.time()
+print(f"Time taken: {end_time - start_time}")    # Runs in less than 2 seconds for limit = 12000
 
